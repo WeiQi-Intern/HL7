@@ -31,7 +31,7 @@ Public Class PV1
                 sqlCheckTwoCols(con, cmd, pClass)
             End Using
         End Using
-        If pClass.Contains(pv1(1)) Then
+        If pClass.Contains(pv1(2)) Then
             outputConverted("PV1", id, 1, 2, pClass(pClass.IndexOf(pv1(2)) + 1))
         Else
             outputError("PV1", id, 1, 2, "Invalid patient class")
@@ -101,8 +101,8 @@ Public Class PV1
         Else
             outputError("PV1", id, 35, 36, "Invalid discharge disposition")
         End If
-        'stop here left pv1, PID, OBX, OBR
-        '36 to 51
+
+        '36 to 52
         For idx As Integer = 36 To 51
             outputConverted("PV1", id, idx, idx + 1, "")
         Next

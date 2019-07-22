@@ -53,6 +53,26 @@ Module freqFuncts
             parserInterface.DataGridView1.Rows.Add(outputRow)
             PV1.toBeParsedPv1.Enqueue(outputRow)
         End If
+        If seg = "EVN" Then
+            Dim outputRow As String() = New String() {id, "EVN", "Event Type", EVN.evnComponents(compIdx), EVN.evn(queueIdx), "", DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), errMsg}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            EVN.toBeParsedEvn.Enqueue(outputRow)
+        End If
+        If seg = "PID" Then
+            Dim outputRow As String() = New String() {id, "PID", "Patient Identification", PID.pidComponents(compIdx), PID.pid(queueIdx), "", DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), errMsg}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            PID.toBeParsedPid.Enqueue(outputRow)
+        End If
+        If seg = "OBR" Then
+            Dim outputRow As String() = New String() {id, "OBR", "Observation Reports", OBR.obrComponents(compIdx), OBR.obr(queueIdx), "", DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), errMsg}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            OBR.toBeParsedObr.Enqueue(outputRow)
+        End If
+        If seg = "OBX" Then
+            Dim outputRow As String() = New String() {id, "OBX", "Observation", OBX.obxComponents(compIdx), OBX.obx(queueIdx), "", DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), errMsg}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            OBX.toBeParsedObx.Enqueue(outputRow)
+        End If
     End Function
     Public Function outputConverted(ByVal seg As String, ByVal id As Integer, ByVal compIdx As Integer, ByVal queueIdx As Integer, ByVal convertedValue As String)
         If seg = "MSH" Then
@@ -74,6 +94,26 @@ Module freqFuncts
             Dim outputRow As String() = New String() {id, "PV1", "Patient Visit", PV1.pv1Components(compIdx), PV1.pv1(queueIdx), convertedValue, DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), ""}
             parserInterface.DataGridView1.Rows.Add(outputRow)
             PV1.toBeParsedPv1.Enqueue(outputRow)
+        End If
+        If seg = "EVN" Then
+            Dim outputRow As String() = New String() {id, "EVN", "Event Type", EVN.evnComponents(compIdx), EVN.evn(queueIdx), convertedValue, DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), ""}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            EVN.toBeParsedEvn.Enqueue(outputRow)
+        End If
+        If seg = "PID" Then
+            Dim outputRow As String() = New String() {id, "PID", "Patient Identification", PID.pidComponents(compIdx), PID.pid(queueIdx), convertedValue, DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), ""}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            PID.toBeParsedPid.Enqueue(outputRow)
+        End If
+        If seg = "OBR" Then
+            Dim outputRow As String() = New String() {id, "OBR", "Observation Reports", OBR.obrComponents(compIdx), OBR.obr(queueIdx), convertedValue, DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), ""}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            OBR.toBeParsedObr.Enqueue(outputRow)
+        End If
+        If seg = "OBX" Then
+            Dim outputRow As String() = New String() {id, "OBX", "Observation", OBX.obxComponents(compIdx), OBX.obx(queueIdx), convertedValue, DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), ""}
+            parserInterface.DataGridView1.Rows.Add(outputRow)
+            OBX.toBeParsedObx.Enqueue(outputRow)
         End If
     End Function
     Public Function comboBoxIf(ByVal input As Queue(Of String()))

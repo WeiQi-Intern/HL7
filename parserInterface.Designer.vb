@@ -70,12 +70,12 @@ Partial Class parserInterface
         Me.DataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridView1.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Column1, Me.Column2, Me.Column3, Me.Column4, Me.Column5, Me.Column6, Me.Column7, Me.Column8})
-        Me.DataGridView1.Location = New System.Drawing.Point(12, 235)
+        Me.DataGridView1.Location = New System.Drawing.Point(12, 250)
         Me.DataGridView1.Name = "DataGridView1"
         Me.DataGridView1.ReadOnly = True
         Me.DataGridView1.RowHeadersWidth = 51
         Me.DataGridView1.RowTemplate.Height = 24
-        Me.DataGridView1.Size = New System.Drawing.Size(1230, 379)
+        Me.DataGridView1.Size = New System.Drawing.Size(1488, 379)
         Me.DataGridView1.TabIndex = 2
         Me.DataGridView1.Visible = False
         '
@@ -289,9 +289,9 @@ Partial Class parserInterface
         '
         Me.ComboBox1.FormattingEnabled = True
         Me.ComboBox1.Items.AddRange(New Object() {"All", "Only non-blanks"})
-        Me.ComboBox1.Location = New System.Drawing.Point(1248, 235)
+        Me.ComboBox1.Location = New System.Drawing.Point(152, 212)
         Me.ComboBox1.Name = "ComboBox1"
-        Me.ComboBox1.Size = New System.Drawing.Size(252, 24)
+        Me.ComboBox1.Size = New System.Drawing.Size(187, 24)
         Me.ComboBox1.TabIndex = 13
         Me.ComboBox1.Visible = False
         '
