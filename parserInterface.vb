@@ -3,6 +3,11 @@
     Public existingFiles As Queue(Of String) = New Queue(Of String)
     Public parseContent As List(Of String) = New List(Of String)
     Public parseIndex As List(Of Integer) = New List(Of Integer)
+    Public piMsg As String() = {}
+    Public piIndex As Integer = 0
+    Public removeBlanks As Boolean = False
+    Public errorStatus As String = "no"
+    Public showBlanksOnly As String = "no"
     Public Function importHL7()
         If System.IO.Directory.Exists("C:\Users\weiqi-intern\Desktop\HL7-samples") Then
             Dim dir As New System.IO.DirectoryInfo("C:\Users\weiqi-intern\Desktop\HL7-samples")
@@ -43,6 +48,15 @@
             importHL7()
         End If
         TextBox3.Text = timerCounter
+
+        'row turns peachpuff when there is error!
+        For i As Integer = 0 To DataGridView1.Rows.Count() - 1 Step +1
+            Dim val As String
+            val = DataGridView1.Rows(i).Cells(7).Value
+            If val <> "" Then
+                DataGridView1.Rows(i).DefaultCellStyle.BackColor = Color.PeachPuff
+            End If
+        Next
     End Sub
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         importHL7()
@@ -58,10 +72,14 @@
         Label2.Visible = False
         ComboBox1.Visible = False
         TextBox4.Visible = False
+        TextBox5.Visible = False
     End Sub
     Private Sub DataGridView2_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView2.CellClick
-        'rmb clearr!!
-        MSH.msh.Clear()
+        'rmb clearr!! here
+        'MSH.msh.Clear()
+        removeBlanks = False
+        errorStatus = "no"
+        showBlanksOnly = "no"
         DataGridView1.Rows.Clear()
         ComboBox1.ResetText()
         TextBox4.Clear()
@@ -80,40 +98,111 @@
             'split into different segment in the message array below
             Dim message As String() = rawMessage.Split({vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
             parsing.startParser(message, id)
+            piMsg = message
+            piIndex = id
             DataGridView1.Visible = True
             Label2.Visible = True
             ComboBox1.Visible = True
-            'TextBox.Text = selectedRow.Cells(0).Value.ToString()
+            TextBox5.Visible = True
         Else
-            MessageBox.Show("noo")
+            MessageBox.Show("Please wait while the system loads...")
             Label2.Visible = False
             DataGridView1.Visible = False
             ComboBox1.Visible = False
+            TextBox5.Visible = False
         End If
     End Sub
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
-        MSH.msh.Clear()
+        'MSH.msh.Clear()
+        removeBlanks = False
+        errorStatus = "no"
+        showBlanksOnly = "no"
         DataGridView1.Rows.Clear()
-        If ComboBox1.Text = "" Or ComboBox1.Text = "All" Then
-            comboBoxIf(MSH.toBeParsedMsh)
-            comboBoxIf(MSA.toBeParsedMsa)
-            comboBoxIf(EVN.toBeParsedEvn)
-            comboBoxIf(PID.toBeParsedPid)
-            comboBoxIf(NK1.toBeParsedNk1)
-            comboBoxIf(PV1.toBeParsedPv1)
-            comboBoxIf(OBR.toBeParsedObr)
-            comboBoxIf(OBX.toBeParsedObx)
-            comboBoxIf(NTE.toBeParsedNte)
-        Else
-            comboBoxElse(MSH.toBeParsedMsh)
-            comboBoxElse(MSA.toBeParsedMsa)
-            comboBoxElse(EVN.toBeParsedEvn)
-            comboBoxElse(PID.toBeParsedPid)
-            comboBoxElse(NK1.toBeParsedNk1)
-            comboBoxElse(PV1.toBeParsedPv1)
-            comboBoxElse(OBR.toBeParsedObr)
-            comboBoxElse(OBX.toBeParsedObx)
-            comboBoxElse(NTE.toBeParsedNte)
+        If ComboBox1.Text = "All" Or ComboBox1.Text = "" Then
+            removeBlanks = False
+            parsing.startParser(piMsg, piIndex)
+        ElseIf ComboBox1.Text = "Show Filled Components Only" Then
+            removeBlanks = True
+            parsing.startParser(piMsg, piIndex)
+        ElseIf ComboBox1.Text = "Show Unfilled Components Only" Then
+            showBlanksOnly = "yes"
+            parsing.startParser(piMsg, piIndex)
+        ElseIf ComboBox1.Text = "MSH – Message Header" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "MSH" Then
+                    MSH.parseMSH(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "MSA – Message Acknowledgment" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "MSA" Then
+                    MSA.parseMSA(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "EVN – Event Type" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "EVN" Then
+                    EVN.parseEVN(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "PID – Patient Identification" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "PID" Then
+                    PID.parsePID(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "NK1 – Next of Kin/Associated Parties" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "NK1" Then
+                    NK1.parseNK1(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "PV1 – Patient Visit" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "PV1" Then
+                    PV1.parsePV1(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "OBR – Observation Reports" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "OBR" Then
+                    OBR.parseOBR(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "OBX – Observation" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "OBX" Then
+                    OBX.parseOBX(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "NTE – Notes and Comments (Observation Specific)" Then
+            For Each piSeg In piMsg
+                If (piSeg(0) + piSeg(1) + piSeg(2)) = "NTE" Then
+                    NTE.parseNTE(piSeg, piIndex)
+                Else
+                    Continue For
+                End If
+            Next
+        ElseIf ComboBox1.Text = "Show Errors Only" Then
+            removeBlanks = False
+            errorStatus = "yes"
+            parsing.startParser(piMsg, piIndex)
         End If
     End Sub
 End Class

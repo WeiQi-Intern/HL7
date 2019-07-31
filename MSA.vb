@@ -19,21 +19,34 @@ Public Class MSA
         'link to sql
         Dim constr As String = "Data Source=LENOVO-330-VN6F\SQLEXPRESS;Initial Catalog=importFromExcel;user id=sa;password=111"
 
-        '0 acknowledgment code
-        Dim ackCode As New List(Of String)
-        Using con As SqlConnection = New SqlConnection(constr)
-            Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'acknowledgementCode'")
-                sqlCheckTwoCols(con, cmd, ackcode)
+        '0 acknowledgment code - R;ID
+        If msa(1) <> "" Then
+            Dim ackCode As New List(Of String)
+            Using con As SqlConnection = New SqlConnection(constr)
+                Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'acknowledgementCode'")
+                    sqlCheckTwoCols(con, cmd, ackcode)
+                End Using
             End Using
-        End Using
-        If ackCode.Contains(msa(1)) Then
-            outputConverted("MSA", id, 0, 1, ackCode(ackCode.IndexOf(msa(1)) + 1))
+            If ackCode.Contains(msa(1)) Then
+                outputConverted("MSA", id, 0, 1, ackCode(ackCode.IndexOf(msa(1)) + 1))
+            Else
+                outputError("MSA", id, 0, 1, "Invalid acknowledgement code")
+            End If
         Else
-            outputError("MSA", id, 0, 1, "Invalid acknowledgement code")
+            outputError("MSA", id, 0, 1, "Acknowledgement code is REQUIRED")
         End If
 
-        '1 to 5
-        For idx As Integer = 1 To 5
+        '1 Message control ID - R;ST
+        usageRequired(id, msa(2), "MSA", 1, "Message control ID is REQUIRED")
+
+        '2 Text messsage - O;ST
+        outputConverted("MSA", id, 2, 3, "")
+
+        '3 Expected sequence number - O;NM
+        dataTypeNM(id, msa(4), "MSA", 3, "Invalid expected seqeunce number")
+
+        '4 Delayed acknowledgement type ~ 5 Error condition [excluded]
+        For idx As Integer = 4 To 5
             outputConverted("MSA", id, idx, idx + 1, "")
         Next
     End Function

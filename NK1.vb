@@ -22,12 +22,18 @@ Public Class NK1
         'link to sql
         Dim constr As String = "Data Source=LENOVO-330-VN6F\SQLEXPRESS;Initial Catalog=importFromExcel;user id=sa;password=111"
 
-        '0 to 1
-        For idx As Integer = 0 To 1
-            outputConverted("NK1", id, idx, idx + 1, "")
-        Next
+        '0 Set ID - R;SI
+        If nk1(1) = "" Then
+            outputError("NK1", id, 0, 1, "Set ID is REQUIRED")
+        Else
+            dataTypeSIrequired(id, nk1(1), "NK1", 0, "Invalid set ID")
+        End If
 
-        '2 relationship
+        '1 Name - O;XPN
+        outputConverted("NK1", id, 1, 2, "")
+
+
+        '2 relationship - O;CWE
         Dim rs As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'relationship'")
@@ -40,12 +46,12 @@ Public Class NK1
             outputError("NK1", id, 2, 3, "Invalid relationship")
         End If
 
-        '3 to 5
+        '3 Address ~ 5 Business phone number - O
         For idx As Integer = 3 To 5
             outputConverted("NK1", id, idx, idx + 1, "")
         Next
 
-        '6 contact role
+        '6 Contact role - O;CWE
         Dim cr As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'contactRole'")
@@ -58,12 +64,12 @@ Public Class NK1
             outputError("NK1", id, 6, 7, "Invalid contact role")
         End If
 
-        '7 to 32
+        '7 Start Date ~ 32 Next of Kin/Associated Party's Identifiers - O
         For idx As Integer = 7 To 32
             outputConverted("NK1", id, idx, idx + 1, "")
         Next
 
-        '33 job status
+        '33 Job status - O;IS
         Dim jobSts As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'jobStatus'")
@@ -76,7 +82,7 @@ Public Class NK1
             outputError("NK1", id, 33, 34, "Invalid contact role")
         End If
 
-        '34 to 36
+        '34 to 36 - O
         For idx As Integer = 34 To 36
             outputConverted("NK1", id, idx, idx + 1, "")
         Next

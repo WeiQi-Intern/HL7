@@ -21,10 +21,10 @@ Public Class PV1
         'link to sql
         Dim constr As String = "Data Source=LENOVO-330-VN6F\SQLEXPRESS;Initial Catalog=importFromExcel;user id=sa;password=111"
 
-        '0
-        outputConverted("PV1", id, 0, 1, "")
+        '0 Set ID - PID - O;SI
+        dataTypeSIoptional(id, pv1(1), "PV1", 0, "Invalid set ID")
 
-        '1 patient class
+        '1 Patient class - O;IS
         Dim pClass As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'patientClass'")
@@ -37,10 +37,10 @@ Public Class PV1
             outputError("PV1", id, 1, 2, "Invalid patient class")
         End If
 
-        '2
+        '2 Assigned patient location - O;PL
         outputConverted("PV1", id, 2, 3, "")
 
-        '3 admission type
+        '3 Admission type - O;IS
         Dim adType As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'admissionType'")
@@ -53,12 +53,12 @@ Public Class PV1
             outputError("PV1", id, 3, 4, "Invalid admission type")
         End If
 
-        '4 to 12
+        '4 Pre-admit number ~ 12 Re-admission indicator - O
         For idx As Integer = 4 To 12
             outputConverted("PV1", id, idx, idx + 1, "")
         Next
 
-        '13 admit source
+        '13 Admit source - O;IS
         Dim adSource As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'admitSource'")
@@ -71,10 +71,10 @@ Public Class PV1
             outputError("PV1", id, 13, 14, "Invalid admission type")
         End If
 
-        '14 ambulatory source
+        '14 Ambulatory status - O;IS
         Dim amSource As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
-            Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'ambulatorySource'")
+            Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'ambulatoryStatus'")
                 sqlCheckTwoCols(con, cmd, amSource)
             End Using
         End Using
@@ -84,12 +84,12 @@ Public Class PV1
             outputError("PV1", id, 14, 15, "Invalid ambulatory source")
         End If
 
-        '15 to 34
+        '15 VIP indicator ~ 34 Deleted account date - O
         For idx As Integer = 15 To 34
             outputConverted("PV1", id, idx, idx + 1, "")
         Next
 
-        '35 discharge disposition
+        '35 Discharge disposition - O;IS
         Dim dd As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'dischargeDisposition'")
@@ -102,8 +102,24 @@ Public Class PV1
             outputError("PV1", id, 35, 36, "Invalid discharge disposition")
         End If
 
-        '36 to 52
-        For idx As Integer = 36 To 51
+        '36 Discharged to Location ~ 42 Prior Temporary Location - O
+        For idx As Integer = 36 To 42
+            outputConverted("PV1", id, idx, idx + 1, "")
+        Next
+
+        '43 Admit date/time ~ 44 Discharge date/time - O
+        For idx As Integer = 43 To 44
+            checkDTMoptional(id, pv1(idx + 1), "PV1", idx)
+        Next
+
+        '45 Current patient balance - O
+        outputConverted("PV1", id, 45, 46, "")
+
+        '46 Total charges - O;NM
+        dataTypeNM(id, pv1(47), "PV1", 46, "Invalid total charges")
+
+        '47 Total adjustments ~ 51 Other healthcare provider - O
+        For idx As Integer = 47 To 51
             outputConverted("PV1", id, idx, idx + 1, "")
         Next
     End Function

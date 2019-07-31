@@ -34,6 +34,7 @@
         If ((input.Count = 0) OrElse (input(0)(0) + input(0)(1) + input(0)(2) <> "MSH")) Then
             parserInterface.TextBox4.Text = "Invalid HL7 message! Should begin with MSH."
             parserInterface.TextBox4.Visible = True
+            parserInterface.DataGridView1.Visible = False
         Else
             For Each line In input
                 Dim seg As String = line(0) + line(1) + line(2)

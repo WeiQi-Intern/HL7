@@ -19,12 +19,27 @@ Public Class PID
         'STEP 3: check with sql
         Dim constr As String = "Data Source=LENOVO-330-VN6F\SQLEXPRESS;Initial Catalog=importFromExcel;user id=sa;password=111"
 
-        '0 to 6
-        For idx As Integer = 0 To 6
+        '0 Set ID - PID - O;SI
+        dataTypeSIoptional(id, pid(1), "PID", 0, "Invalid set ID")
+
+        '1 Patient ID - O;CX
+        outputConverted("PID", id, 1, 2, "")
+
+        '2 Patient identifier list - R;CX
+        usageRequired(id, pid(3), "PID", 2, "Patient identifier list is REQUIRED")
+
+        '3 Alternate Patient ID – PID - O;CX
+        outputConverted("PID", id, 3, 4, "")
+
+        '4 Patient Name - R;XPN
+        usageRequired(id, pid(5), "PID", 4, "Patient name is REQUIRED")
+
+        '5 Mother's Maiden Name ~ 6 Date/Time of Birth - O [excluded]
+        For idx As Integer = 5 To 6
             outputConverted("PID", id, idx, idx + 1, "")
         Next
 
-        '8 gender
+        '7 Gender - O;IS 
         Dim gender As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'administrativeSex'")
@@ -37,10 +52,10 @@ Public Class PID
             outputError("PID", id, 7, 8, "Invalid gender")
         End If
 
-        '9 
+        '8 Patient Alias - O;XPN
         outputConverted("PID", id, 8, 9, "")
 
-        '10
+        '9 Race - O;CWE
         Dim race As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'race'")
@@ -53,12 +68,12 @@ Public Class PID
             outputError("PID", id, 9, 10, "Invalid race")
         End If
 
-        '10 to 14
+        '10 Patient address ~ 14 Primary language - O
         For idx As Integer = 10 To 14
             outputConverted("PID", id, idx, idx + 1, "")
         Next
 
-        '16
+        '15 Marital status - O;CWE
         Dim maritalStatus As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'maritalStatus'")
@@ -71,7 +86,7 @@ Public Class PID
             outputError("PID", id, 15, 16, "Invalid marital status")
         End If
 
-        '17 religion
+        '16 Religion - O;CWE
         Dim religion As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'religion'")
@@ -84,12 +99,12 @@ Public Class PID
             outputError("PID", id, 16, 17, "Invalid religion")
         End If
 
-        '17 to 20
+        '17 Patient account number ~ 20 mother's identifier - O
         For idx As Integer = 17 To 20
             outputConverted("PID", id, idx, idx + 1, "")
         Next
 
-        '22 ethnic group
+        '21 Ethnic group - O;CWE
         Dim eg As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'ethnicGroup'")
@@ -102,10 +117,10 @@ Public Class PID
             outputError("PID", id, 21, 22, "Invalid ethnic group")
         End If
 
-        '23
+        '22 Birth place - O;XAD
         outputConverted("PID", id, 22, 23, "")
 
-        '24 birth indicator
+        '23 Multiple birth indicator - O;ID
         Dim bi As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'yesNoIndicator'")
@@ -118,12 +133,15 @@ Public Class PID
             outputError("PID", id, 23, 24, "Invalid birth indicator")
         End If
 
-        '25 to 29
-        For idx As Integer = 24 To 28
+        '24 Birth order ~ 27 Nationality - O
+        For idx As Integer = 24 To 27
             outputConverted("PID", id, idx, idx + 1, "")
         Next
 
-        '30 patient death indicator
+        '28 Patient death date and time
+        checkDTMoptional(id, pid(29), "PID", 28)
+
+        '29 Patient death indicator
         Dim pdi As New List(Of String)
         Using con As SqlConnection = New SqlConnection(constr)
             Using cmd As SqlCommand = New SqlCommand("SELECT Code, Label FROM convertedValuesTable WHERE Type = 'yesNoIndicator'")

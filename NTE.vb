@@ -16,10 +16,18 @@
         Next
 
         'No comparison to sql
-        For idx As Integer = 0 To 2
-            Dim outputRow As String() = New String() {id, "NTE", "Notes and Comments (Observation Specific)", nteComponents(idx), nte(idx + 1), "", DateAndTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), ""}
-            parserInterface.DataGridView1.Rows.Add(outputRow)
-            toBeParsedNte.Enqueue(outputRow)
-        Next
+
+        '0 Set ID - R;SI
+        If nte(1) = "" Then
+            outputError("NTE", id, 0, 1, "Set ID is REQUIRED")
+        Else
+            dataTypeSIrequired(id, nte(1), "NTE", 0, "Invalid set ID")
+        End If
+
+        '1 source of comment - O [excluded]
+        outputConverted("NTE", id, 1, 2, "")
+
+        '2 comment - R;FT
+        usageRequired(id, nte(3), "NTE", 2, "Comment is REQUIRED")
     End Function
 End Class
